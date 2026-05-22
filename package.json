@@ -11,29 +11,19 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:command-extension.helloWorld",
-    "onCommand:command-extension.contextSwapper",
-    "onCommand:extension-launcher.helloWorld",
+    "onCommand:extension-launcher.ping",
     "onCommand:extension-launcher.run"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "extension-launcher.helloWorld",
-        "title": "Extension Launcher: Hello World"
+        "command": "extension-launcher.ping",
+        "title": "Extension Launcher: Ping"
       },
       {
         "command": "extension-launcher.run",
         "title": "Extension Launcher"
-      },
-      {
-        "command": "command-extension.contextSwapper",
-        "title": "ContextSwapper (Legacy)"
-      },
-      {
-        "command": "command-extension.helloWorld",
-        "title": "Command Extension: Hello World (Legacy)"
       }
     ],
     "configuration": {

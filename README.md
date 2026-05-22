@@ -31,8 +31,6 @@ Configure mappings in your VS Code settings:
 ]
 ```
 
-Legacy compatibility: existing `contextSwapper.mappings` entries are still read if `extensionLauncher.mappings` is empty.
-
 `commandArgs` is optional.
 
 - If `commandArgs` is omitted, the selected file URI is passed automatically.

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 
-type ContextSwapperMapping = {
+type ExtensionLauncherMapping = {
   title: string;
   extension: string;
   command: string;
@@ -8,12 +8,8 @@ type ContextSwapperMapping = {
 };
 
 export function activate(context: vscode.ExtensionContext): void {
-  const helloCommand = vscode.commands.registerCommand('extension-launcher.helloWorld', () => {
-    void vscode.window.showInformationMessage('Hello from Extension Launcher!');
-  });
-
-  const legacyHelloCommand = vscode.commands.registerCommand('command-extension.helloWorld', () => {
-    void vscode.commands.executeCommand('extension-launcher.helloWorld');
+  const pingCommand = vscode.commands.registerCommand('extension-launcher.ping', () => {
+    void vscode.window.showInformationMessage('Extension Launcher is active.');
   });
 
   const extensionLauncherCommand = vscode.commands.registerCommand(
@@ -108,31 +104,19 @@ export function activate(context: vscode.ExtensionContext): void {
     }
   );
 
-  const legacyRunCommand = vscode.commands.registerCommand('command-extension.contextSwapper', () =>
-    vscode.commands.executeCommand('extension-launcher.run')
-  );
-
-  context.subscriptions.push(
-    helloCommand,
-    legacyHelloCommand,
-    extensionLauncherCommand,
-    legacyRunCommand
-  );
+  context.subscriptions.push(pingCommand, extensionLauncherCommand);
 }
 
 export function deactivate(): void {
   // no-op
 }
 
-function getConfiguredMappings(): ContextSwapperMapping[] {
+function getConfiguredMappings(): ExtensionLauncherMapping[] {
   const config = vscode.workspace.getConfiguration('extensionLauncher');
   const rawMappings = config.get<unknown[]>('mappings', []);
-  const legacyConfig = vscode.workspace.getConfiguration('contextSwapper');
-  const legacyRawMappings = legacyConfig.get<unknown[]>('mappings', []);
-  const sourceMappings = rawMappings.length > 0 ? rawMappings : legacyRawMappings;
-  const validMappings: ContextSwapperMapping[] = [];
+  const validMappings: ExtensionLauncherMapping[] = [];
 
-  for (const raw of sourceMappings) {
+  for (const raw of rawMappings) {
     if (!raw || typeof raw !== 'object') {
       continue;
     }
@@ -158,7 +142,7 @@ function getConfiguredMappings(): ContextSwapperMapping[] {
   return validMappings;
 }
 
-function buildCommandArgs(mapping: ContextSwapperMapping, uri: vscode.Uri): unknown[] {
+function buildCommandArgs(mapping: ExtensionLauncherMapping, uri: vscode.Uri): unknown[] {
   const extension = normalizeExtension(mapping.extension);
   const args = mapping.commandArgs && mapping.commandArgs.length > 0 ? mapping.commandArgs : [uri];
   return args.map((arg) => resolveTokens(arg, uri, extension));
