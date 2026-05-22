@@ -23,13 +23,41 @@ Configure mappings in your VS Code settings:
 ```json
 "extensionLauncher.mappings": [
 	{
-		"title": "Open BCS with Example Command",
+		"title": "Open BCS In Editor",
 		"extension": ".bcs",
-		"command": "vscode.open",
-		"commandArgs": ["${uri}"]
+		"command": "vscode.open"
+	},
+	{
+		"title": "Run Task: Process BCS File",
+		"extension": ".bcs",
+		"command": "workbench.action.tasks.runTask",
+		"commandArgs": ["Process Current BCS"]
+	},
+	{
+		"title": "Open Workspace Settings Search",
+		"extension": ".json",
+		"command": "workbench.action.openSettings",
+		"commandArgs": ["files.associations"]
+	},
+	{
+		"title": "Send File Info To Terminal",
+		"extension": ".bcs",
+		"command": "workbench.action.terminal.sendSequence",
+		"commandArgs": [
+			{
+				"text": "echo FILE=${fsPath} NAME=${basename} EXT=${extension}\u000D"
+			}
+		]
 	}
 ]
 ```
+
+Example notes:
+
+- `vscode.open`: omit `commandArgs` so the selected file `Uri` is passed automatically.
+- `workbench.action.tasks.runTask`: pass the task label exactly as defined in your `tasks.json`.
+- `workbench.action.openSettings`: useful when you want to jump to a specific setting query.
+- `workbench.action.terminal.sendSequence`: shows token usage in command arguments.
 
 `commandArgs` is optional.
 
