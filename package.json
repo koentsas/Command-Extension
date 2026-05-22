@@ -1,100 +1,100 @@
 {
-  "name": "extension-launcher",
-  "displayName": "Extension Launcher",
-  "description": "Launch configured commands for files by extension.",
-  "version": "0.0.1",
-  "publisher": "your-publisher-name",
-  "engines": {
-    "vscode": "^1.90.0"
-  },
-  "categories": [
-    "Other"
-  ],
-  "activationEvents": [
-    "onCommand:extension-launcher.ping",
-    "onCommand:extension-launcher.run"
-  ],
-  "main": "./dist/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "extension-launcher.ping",
-        "title": "Extension Launcher: Ping"
-      },
-      {
-        "command": "extension-launcher.run",
-        "title": "Extension Launcher"
-      }
+    "name": "extension-launcher",
+    "displayName": "Extension Launcher",
+    "description": "Launch configured commands for files by extension.",
+    "version": "0.0.1",
+    "publisher": "your-publisher-name",
+    "engines": {
+        "vscode": "^1.90.0"
+    },
+    "categories": [
+        "Other"
     ],
-    "configuration": {
-      "title": "Extension Launcher",
-      "properties": {
-        "extensionLauncher.mappings": {
-          "type": "array",
-          "default": [],
-          "markdownDescription": "Mappings used by the Extension Launcher command. Each item defines the visible title, file extension, command id, and optional commandArgs.",
-          "items": {
-            "type": "object",
-            "required": [
-              "title",
-              "extension",
-              "command"
-            ],
-            "properties": {
-              "title": {
-                "type": "string",
-                "description": "Title shown in the first quick pick."
-              },
-              "extension": {
-                "type": "string",
-                "description": "File extension to search for, with or without leading dot."
-              },
-              "command": {
-                "type": "string",
-                "description": "VS Code command id to execute after selecting a file."
-              },
-              "commandArgs": {
-                "type": "array",
-                "description": "Optional command arguments. If omitted, the selected file Uri is passed as the first argument.",
-                "items": {
-                  "type": [
-                    "string",
-                    "number",
-                    "boolean",
-                    "object",
-                    "array",
-                    "null"
-                  ]
-                }
-              }
+    "activationEvents": [
+        "onCommand:extension-launcher.ping",
+        "onCommand:extension-launcher.run"
+    ],
+    "main": "./dist/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension-launcher.ping",
+                "title": "Extension Launcher: Ping"
+            },
+            {
+                "command": "extension-launcher.run",
+                "title": "Extension Launcher"
             }
-          }
+        ],
+        "configuration": {
+            "title": "Extension Launcher",
+            "properties": {
+                "extensionLauncher.mappings": {
+                    "type": "array",
+                    "default": [],
+                    "markdownDescription": "Mappings used by the Extension Launcher command. Each item defines the visible title, file extension, command id, and optional commandArgs.",
+                    "items": {
+                        "type": "object",
+                        "required": [
+                            "title",
+                            "extension",
+                            "command"
+                        ],
+                        "properties": {
+                            "title": {
+                                "type": "string",
+                                "description": "Title shown in the first quick pick."
+                            },
+                            "extension": {
+                                "type": "string",
+                                "description": "File extension to search for, with or without leading dot."
+                            },
+                            "command": {
+                                "type": "string",
+                                "description": "VS Code command id to execute after selecting a file."
+                            },
+                            "commandArgs": {
+                                "type": "array",
+                                "description": "Optional command arguments. If omitted, the selected file Uri is passed as the first argument.",
+                                "items": {
+                                    "type": [
+                                        "string",
+                                        "number",
+                                        "boolean",
+                                        "object",
+                                        "array",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
-      }
+    },
+    "scripts": {
+        "build": "node esbuild.js",
+        "watch": "node esbuild.js --watch",
+        "typecheck": "tsc --noEmit",
+        "lint": "eslint src --ext .ts",
+        "format": "prettier --write .",
+        "check-format": "prettier --check .",
+        "vscode:prepublish": "npm run lint && npm run typecheck && npm run build",
+        "package:vsix": "vsce package",
+        "publish:vsce": "vsce publish"
+    },
+    "devDependencies": {
+        "@types/node": "^20.14.9",
+        "@types/vscode": "^1.90.0",
+        "@typescript-eslint/eslint-plugin": "^8.32.0",
+        "@typescript-eslint/parser": "^8.32.0",
+        "@vscode/vsce": "^3.2.1",
+        "esbuild": "^0.25.5",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^10.1.5",
+        "eslint-plugin-prettier": "^5.4.0",
+        "prettier": "^3.5.3",
+        "typescript": "^5.8.3"
     }
-  },
-  "scripts": {
-    "build": "node esbuild.js",
-    "watch": "node esbuild.js --watch",
-    "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --write .",
-    "check-format": "prettier --check .",
-    "vscode:prepublish": "npm run lint && npm run typecheck && npm run build",
-    "package:vsix": "vsce package",
-    "publish:vsce": "vsce publish"
-  },
-  "devDependencies": {
-    "@types/node": "^20.14.9",
-    "@types/vscode": "^1.90.0",
-    "@typescript-eslint/eslint-plugin": "^8.32.0",
-    "@typescript-eslint/parser": "^8.32.0",
-    "@vscode/vsce": "^3.2.1",
-    "esbuild": "^0.25.5",
-    "eslint": "^8.57.1",
-    "eslint-config-prettier": "^10.1.5",
-    "eslint-plugin-prettier": "^5.4.0",
-    "prettier": "^3.5.3",
-    "typescript": "^5.8.3"
-  }
 }
