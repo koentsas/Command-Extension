@@ -93,6 +93,10 @@ Run/debug:
 - Press `F5` in VS Code to launch the Extension Development Host.
 - Run the command: `Extension Launcher`.
 
+Continuous Integration:
+
+- GitHub Actions workflow at `.github/workflows/ci.yml` runs lint, typecheck, tests, and build on push and pull requests.
+
 ## Packaging and Publishing
 
 Set your publisher in `package.json` and sign in first:
