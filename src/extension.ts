@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
-
-type ExtensionLauncherMapping = {
-  title: string;
-  extension: string;
-  command: string;
-  commandArgs?: unknown[];
-};
+import {
+  buildCommandArgs,
+  escapeForGlob,
+  parseConfiguredMappings,
+  type ExtensionLauncherMapping
+} from './core.js';
 
 export function activate(context: vscode.ExtensionContext): void {
   const pingCommand = vscode.commands.registerCommand('extension-launcher.ping', () => {
@@ -93,7 +92,15 @@ export function activate(context: vscode.ExtensionContext): void {
           return;
         }
 
-        const args = buildCommandArgs(selectedMapping, filePick.uri);
+        const args = buildCommandArgs(
+          selectedMapping,
+          {
+            uri: filePick.uri.toString(),
+            fsPath: filePick.uri.fsPath,
+            path: filePick.uri.path
+          },
+          filePick.uri
+        );
         await vscode.commands.executeCommand(selectedMapping.command, ...args);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -114,93 +121,5 @@ export function deactivate(): void {
 function getConfiguredMappings(): ExtensionLauncherMapping[] {
   const config = vscode.workspace.getConfiguration('extensionLauncher');
   const rawMappings = config.get<unknown[]>('mappings', []);
-  const validMappings: ExtensionLauncherMapping[] = [];
-
-  for (const raw of rawMappings) {
-    if (!raw || typeof raw !== 'object') {
-      continue;
-    }
-
-    const mapping = raw as Record<string, unknown>;
-    const title = asNonEmptyString(mapping.title);
-    const extension = normalizeExtension(asNonEmptyString(mapping.extension));
-    const command = asNonEmptyString(mapping.command);
-    const commandArgs = Array.isArray(mapping.commandArgs) ? mapping.commandArgs : undefined;
-
-    if (!title || !extension || !command) {
-      continue;
-    }
-
-    validMappings.push({
-      title,
-      extension,
-      command,
-      commandArgs
-    });
-  }
-
-  return validMappings;
-}
-
-function buildCommandArgs(mapping: ExtensionLauncherMapping, uri: vscode.Uri): unknown[] {
-  const extension = normalizeExtension(mapping.extension);
-  const args = mapping.commandArgs && mapping.commandArgs.length > 0 ? mapping.commandArgs : [uri];
-  return args.map((arg) => resolveTokens(arg, uri, extension));
-}
-
-function resolveTokens(value: unknown, uri: vscode.Uri, extension: string): unknown {
-  if (typeof value === 'string') {
-    return value
-      .replaceAll('${uri}', uri.toString())
-      .replaceAll('${fsPath}', uri.fsPath)
-      .replaceAll('${path}', uri.path)
-      .replaceAll(
-        '${basename}',
-        vscode.Uri.joinPath(uri, '..').path === uri.path
-          ? uri.path
-          : (uri.path.split('/').pop() ?? '')
-      )
-      .replaceAll('${dirname}', uri.path.slice(0, Math.max(0, uri.path.lastIndexOf('/'))))
-      .replaceAll('${extension}', extension);
-  }
-
-  if (Array.isArray(value)) {
-    return value.map((item) => resolveTokens(item, uri, extension));
-  }
-
-  if (value && typeof value === 'object') {
-    const result: Record<string, unknown> = {};
-    for (const [key, val] of Object.entries(value as Record<string, unknown>)) {
-      result[key] = resolveTokens(val, uri, extension);
-    }
-    return result;
-  }
-
-  return value;
-}
-
-function asNonEmptyString(value: unknown): string | undefined {
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  const trimmed = value.trim();
-  return trimmed.length > 0 ? trimmed : undefined;
-}
-
-function normalizeExtension(extension: string | undefined): string {
-  if (!extension) {
-    return '';
-  }
-  return extension.trim().replace(/^\.+/, '').toLowerCase();
-}
-
-function escapeForGlob(value: string): string {
-  return value
-    .replaceAll('[', '')
-    .replaceAll(']', '')
-    .replaceAll('{', '')
-    .replaceAll('}', '')
-    .replaceAll('*', '')
-    .replaceAll('?', '');
+  return parseConfiguredMappings(rawMappings);
 }

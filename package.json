@@ -74,9 +74,11 @@
         "watch": "node esbuild.js --watch",
         "typecheck": "tsc --noEmit",
         "lint": "eslint src --ext .ts",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "format": "prettier --write .",
         "check-format": "prettier --check .",
-        "vscode:prepublish": "npm run lint && npm run typecheck && npm run build",
+        "vscode:prepublish": "npm run lint && npm run typecheck && npm run test && npm run build",
         "package:vsix": "vsce package",
         "publish:vsce": "vsce publish"
     },
@@ -91,6 +93,7 @@
         "eslint-config-prettier": "^10.1.5",
         "eslint-plugin-prettier": "^5.4.0",
         "prettier": "^3.5.3",
-        "typescript": "^5.8.3"
+        "typescript": "^5.8.3",
+        "vitest": "^2.1.9"
     }
 }

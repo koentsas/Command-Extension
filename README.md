@@ -76,6 +76,18 @@ Lint:
 npm run lint
 ```
 
+Unit tests:
+
+```bash
+npm run test
+```
+
+Unit tests (watch mode):
+
+```bash
+npm run test:watch
+```
+
 Run/debug:
 
 - Press `F5` in VS Code to launch the Extension Development Host.
