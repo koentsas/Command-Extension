@@ -99,7 +99,12 @@ Continuous Integration:
 
 ## Packaging and Publishing
 
-Set your publisher in `package.json` and sign in first:
+Before first publish, update metadata in `package.json`:
+
+- Replace `publisher` (`your-publisher-name`) with your real Marketplace publisher id.
+- Keep `displayName`, `description`, and `keywords` aligned with what you want in search results.
+
+Then sign in:
 
 ```bash
 npx vsce login <publisher>

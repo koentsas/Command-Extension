@@ -1,9 +1,17 @@
 {
     "name": "extension-launcher",
     "displayName": "Extension Launcher",
-    "description": "Launch configured commands for files by extension.",
+    "description": "Run configured VS Code commands for files by extension.",
     "version": "0.0.1",
     "publisher": "your-publisher-name",
+    "keywords": [
+        "command",
+        "launcher",
+        "files",
+        "automation",
+        "quickpick",
+        "workflow"
+    ],
     "engines": {
         "vscode": "^1.90.0"
     },
@@ -15,11 +23,13 @@
         "commands": [
             {
                 "command": "extension-launcher.ping",
-                "title": "Extension Launcher: Ping"
+                "title": "Ping",
+                "category": "Extension Launcher"
             },
             {
                 "command": "extension-launcher.run",
-                "title": "Extension Launcher"
+                "title": "Run",
+                "category": "Extension Launcher"
             }
         ],
         "configuration": {
@@ -28,7 +38,7 @@
                 "extensionLauncher.mappings": {
                     "type": "array",
                     "default": [],
-                    "markdownDescription": "Mappings used by the Extension Launcher command. Each item defines the visible title, file extension, command id, and optional commandArgs.",
+                    "markdownDescription": "Mappings used by **Extension Launcher: Run**. Each item defines the visible title, file extension, command id, and optional commandArgs token template.",
                     "items": {
                         "type": "object",
                         "required": [
