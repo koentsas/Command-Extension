@@ -1,0 +1,6 @@
+.vscode/**
+.eslint*
+.prettier*
+tsconfig.json
+src/**
+esbuild.js
