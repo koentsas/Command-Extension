@@ -12,7 +12,7 @@
         "quickpick",
         "workflow"
     ],
-        "license": "MIT",
+    "license": "MIT",
     "engines": {
         "vscode": "^1.90.0"
     },
