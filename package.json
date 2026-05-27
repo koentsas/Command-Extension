@@ -4,6 +4,14 @@
     "description": "Run configured VS Code commands for files by extension.",
     "version": "0.0.1",
     "publisher": "tsasson",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/koentsas/Command-Extension.git"
+    },
+    "bugs": {
+        "url": "https://github.com/koentsas/Command-Extension/issues"
+    },
+    "homepage": "https://github.com/koentsas/Command-Extension#readme",
     "keywords": [
         "command",
         "launcher",

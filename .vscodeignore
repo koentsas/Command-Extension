@@ -4,3 +4,6 @@
 tsconfig.json
 src/**
 esbuild.js
+test/**
+.github/**
+.gitignore

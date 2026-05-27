@@ -21,4 +21,5 @@ The format is based on Keep a Changelog.
 - Token replacement support in command arguments (`${uri}`, `${fsPath}`, `${path}`, `${basename}`, `${dirname}`, `${extension}`).
 - Build and release scripts for linting, type-checking, tests, packaging, and publishing.
 
-[0.0.1]: https://github.com/your-org/extension-launcher/releases/tag/v0.0.1
+[Unreleased]: https://github.com/koentsas/Command-Extension/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/koentsas/Command-Extension/releases/tag/v0.0.1
