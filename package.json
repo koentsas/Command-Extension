@@ -3,7 +3,7 @@
     "displayName": "Extension Launcher",
     "description": "Run configured VS Code commands for files by extension.",
     "version": "0.0.1",
-    "publisher": "your-publisher-name",
+    "publisher": "tsasson",
     "keywords": [
         "command",
         "launcher",
@@ -12,6 +12,7 @@
         "quickpick",
         "workflow"
     ],
+        "license": "MIT",
     "engines": {
         "vscode": "^1.90.0"
     },
