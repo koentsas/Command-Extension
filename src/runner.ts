@@ -49,7 +49,8 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
     return;
   }
 
-  const selectedMapping = await api.showMappingQuickPick(mappings);
+  const selectedMapping =
+    mappings.length === 1 ? mappings[0] : await api.showMappingQuickPick(mappings);
   if (!selectedMapping) {
     return;
   }
@@ -78,7 +79,8 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
   const uriValues: UriTokenValues = {
     uri: selectedFile.toString(),
     fsPath: selectedFile.fsPath,
-    path: selectedFile.path
+    path: selectedFile.path,
+    uriObject: selectedFile
   };
 
   const args = buildCommandArgs(selectedMapping, uriValues, selectedFile);

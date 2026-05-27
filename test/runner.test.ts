@@ -89,20 +89,42 @@ describe('runExtensionLauncher', () => {
     );
   });
 
-  it('executes selected command with token-resolved args', async () => {
+  it('skips mapping quick pick when exactly one mapping is configured', async () => {
+    const mappingQuickPick = vi.fn(async () => undefined);
+    const mapping: ExtensionLauncherMapping = {
+      title: 'BCS',
+      extension: 'bcs',
+      command: 'example.command'
+    };
+
+    await runExtensionLauncher(
+      createApi({
+        getConfiguredMappings: () => [mapping],
+        showMappingQuickPick: mappingQuickPick,
+        findFiles: async () => [createUri('/workspace/src/main.bcs')],
+        showFileQuickPick: async (files) => files[0],
+        getAvailableCommands: async () => ['example.command']
+      })
+    );
+
+    expect(mappingQuickPick).not.toHaveBeenCalled();
+  });
+
+  it('passes Uri object when commandArgs contains only ${uri}', async () => {
     const executeCommand = vi.fn(async () => {});
+    const selectedUri = createUri('/workspace/src/main.bcs');
     const mapping: ExtensionLauncherMapping = {
       title: 'BCS',
       extension: '.bcs',
       command: 'example.command',
-      commandArgs: ['${basename}', '${extension}', '${uri}']
+      commandArgs: ['${uri}', '${basename}', '${extension}']
     };
 
     await runExtensionLauncher(
       createApi({
         getConfiguredMappings: () => [mapping],
         showMappingQuickPick: async () => mapping,
-        findFiles: async () => [createUri('/workspace/src/main.bcs')],
+        findFiles: async () => [selectedUri],
         showFileQuickPick: async (files) => files[0],
         getAvailableCommands: async () => ['example.command'],
         executeCommand
@@ -111,9 +133,9 @@ describe('runExtensionLauncher', () => {
 
     expect(executeCommand).toHaveBeenCalledWith(
       'example.command',
+      selectedUri,
       'main.bcs',
-      'bcs',
-      'file:///workspace/src/main.bcs'
+      'bcs'
     );
   });
 });

@@ -9,6 +9,7 @@ export type UriTokenValues = {
   uri: string;
   fsPath: string;
   path: string;
+  uriObject?: unknown;
 };
 
 export function parseConfiguredMappings(rawMappings: unknown[]): ExtensionLauncherMapping[] {
@@ -59,6 +60,10 @@ export function resolveTokens(
   extension: string
 ): unknown {
   if (typeof value === 'string') {
+    if (value === '${uri}') {
+      return uriValues.uriObject ?? uriValues.uri;
+    }
+
     return value
       .replaceAll('${uri}', uriValues.uri)
       .replaceAll('${fsPath}', uriValues.fsPath)
