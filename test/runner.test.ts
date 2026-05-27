@@ -131,11 +131,6 @@ describe('runExtensionLauncher', () => {
       })
     );
 
-    expect(executeCommand).toHaveBeenCalledWith(
-      'example.command',
-      selectedUri,
-      'main.bcs',
-      'bcs'
-    );
+    expect(executeCommand).toHaveBeenCalledWith('example.command', selectedUri, 'main.bcs', 'bcs');
   });
 });

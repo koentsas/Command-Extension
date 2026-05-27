@@ -63,7 +63,7 @@ Example notes:
 
 - If `commandArgs` is omitted, the selected file URI is passed automatically.
 - If provided, you can use tokens inside string arguments:
-	- `${uri}` selected file `Uri` object when used as a whole value, otherwise URI string when embedded in larger text
+  - `${uri}` selected file `Uri` object when used as a whole value, otherwise URI string when embedded in larger text
   - `${fsPath}` absolute file path
   - `${path}` URI path
   - `${basename}` file name
