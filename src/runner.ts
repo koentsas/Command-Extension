@@ -1,6 +1,8 @@
 import {
   buildCommandArgs,
+  extensionFromPath,
   escapeForGlob,
+  isMappingAvailableForSource,
   type ExtensionLauncherMapping,
   type UriTokenValues
 } from './core.js';
@@ -42,6 +44,13 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
     return;
   }
 
+  const sourceMappings = mappings.filter((mapping) =>
+    isMappingAvailableForSource(mapping, 'commandPalette')
+  );
+  if (sourceMappings.length === 0) {
+    return;
+  }
+
   if (!api.hasWorkspaceFolder()) {
     api.showWarningMessage(
       'Open a workspace folder first so Extension Launcher can search for files.'
@@ -50,7 +59,9 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
   }
 
   const selectedMapping =
-    mappings.length === 1 ? mappings[0] : await api.showMappingQuickPick(mappings);
+    sourceMappings.length === 1
+      ? sourceMappings[0]
+      : await api.showMappingQuickPick(sourceMappings);
   if (!selectedMapping) {
     return;
   }
@@ -68,10 +79,48 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
     return;
   }
 
+  await executeMappingForFile(api, selectedMapping, selectedFile);
+}
+
+export async function runExtensionLauncherForFile(
+  api: ExtensionLauncherApi,
+  targetFile: LauncherUri
+): Promise<void> {
+  const mappings = api.getConfiguredMappings();
+
+  const fileExtension = extensionFromPath(targetFile.path);
+  if (!fileExtension) {
+    return;
+  }
+
+  const matchingMappings = mappings.filter(
+    (mapping) =>
+      mapping.extension === fileExtension && isMappingAvailableForSource(mapping, 'contextMenu')
+  );
+  if (matchingMappings.length === 0) {
+    return;
+  }
+
+  const selectedMapping =
+    matchingMappings.length === 1
+      ? matchingMappings[0]
+      : await api.showMappingQuickPick(matchingMappings);
+  if (!selectedMapping) {
+    return;
+  }
+
+  await executeMappingForFile(api, selectedMapping, targetFile);
+}
+
+async function executeMappingForFile(
+  api: ExtensionLauncherApi,
+  mapping: ExtensionLauncherMapping,
+  selectedFile: LauncherUri
+): Promise<void> {
   const availableCommands = await api.getAvailableCommands();
-  if (!availableCommands.includes(selectedMapping.command)) {
+  if (!availableCommands.includes(mapping.command)) {
     api.showErrorMessage(
-      `Configured command not found: ${selectedMapping.command}. Check extensionLauncher.mappings and ensure the providing extension is installed/enabled in this window.`
+      `Configured command not found: ${mapping.command}. Check extensionLauncher.mappings and ensure the providing extension is installed/enabled in this window.`
     );
     return;
   }
@@ -83,6 +132,6 @@ export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<v
     uriObject: selectedFile
   };
 
-  const args = buildCommandArgs(selectedMapping, uriValues, selectedFile);
-  await api.executeCommand(selectedMapping.command, ...args);
+  const args = buildCommandArgs(mapping, uriValues, selectedFile);
+  await api.executeCommand(mapping.command, ...args);
 }

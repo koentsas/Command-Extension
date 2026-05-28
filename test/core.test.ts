@@ -3,6 +3,9 @@ import { describe, expect, it } from 'vitest';
 import {
   asNonEmptyString,
   buildCommandArgs,
+  extensionFromPath,
+  isMappingAvailableForSource,
+  normalizeCommandAvailability,
   escapeForGlob,
   normalizeExtension,
   parseConfiguredMappings,
@@ -37,9 +40,30 @@ describe('parseConfiguredMappings', () => {
         title: 'Open BCS',
         extension: 'bcs',
         command: 'vscode.open',
+        commandAvailability: 'both',
         commandArgs: undefined
       }
     ]);
+  });
+
+  it('normalizes per-mapping commandAvailability with fallback to both', () => {
+    const parsed = parseConfiguredMappings([
+      {
+        title: 'Context Mapping',
+        extension: '.bcs',
+        command: 'vscode.open',
+        commandAvailability: 'contextMenu'
+      },
+      {
+        title: 'Invalid Availability',
+        extension: '.bcs',
+        command: 'vscode.open',
+        commandAvailability: 'invalid'
+      }
+    ]);
+
+    expect(parsed[0].commandAvailability).toBe('contextMenu');
+    expect(parsed[1].commandAvailability).toBe('both');
   });
 });
 
@@ -116,5 +140,39 @@ describe('helpers', () => {
       b: ['main.bcs', { c: '/workspace/src' }],
       d: true
     });
+  });
+
+  it('extracts normalized extension from URI path', () => {
+    expect(extensionFromPath('/workspace/src/main.BCS')).toBe('bcs');
+    expect(extensionFromPath('/workspace/src/archive.tar.gz')).toBe('gz');
+    expect(extensionFromPath('/workspace/src/README')).toBe('');
+    expect(extensionFromPath('/workspace/src/.env')).toBe('env');
+  });
+
+  it('checks mapping availability by launch source', () => {
+    expect(
+      isMappingAvailableForSource(
+        { title: 'A', extension: 'bcs', command: 'x', commandAvailability: 'both' },
+        'contextMenu'
+      )
+    ).toBe(true);
+    expect(
+      isMappingAvailableForSource(
+        { title: 'A', extension: 'bcs', command: 'x', commandAvailability: 'contextMenu' },
+        'contextMenu'
+      )
+    ).toBe(true);
+    expect(
+      isMappingAvailableForSource(
+        { title: 'A', extension: 'bcs', command: 'x', commandAvailability: 'contextMenu' },
+        'commandPalette'
+      )
+    ).toBe(false);
+  });
+
+  it('normalizes invalid availability to both', () => {
+    expect(normalizeCommandAvailability('commandPalette')).toBe('commandPalette');
+    expect(normalizeCommandAvailability('invalid')).toBe('both');
+    expect(normalizeCommandAvailability(undefined)).toBe('both');
   });
 });

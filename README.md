@@ -18,6 +18,14 @@ This extension includes a command named `Extension Launcher` that lets you:
 3. Select one file.
 4. Execute the configured command for that file.
 
+It also adds an Explorer context-menu entry:
+
+1. Right-click a file in Explorer.
+2. Choose `Extension Launcher`.
+3. The extension matches mappings by the selected file extension.
+4. If one mapping matches, it runs immediately.
+5. If multiple mappings match, you choose from a quick pick.
+
 Configure mappings in your VS Code settings:
 
 ```json
@@ -25,24 +33,28 @@ Configure mappings in your VS Code settings:
 	{
 		"title": "Open BCS In Editor",
 		"extension": ".bcs",
-		"command": "vscode.open"
+		"command": "vscode.open",
+		"commandAvailability": "both"
 	},
 	{
 		"title": "Run Task: Process BCS File",
 		"extension": ".bcs",
 		"command": "workbench.action.tasks.runTask",
+		"commandAvailability": "contextMenu",
 		"commandArgs": ["Process Current BCS"]
 	},
 	{
 		"title": "Open Workspace Settings Search",
 		"extension": ".json",
 		"command": "workbench.action.openSettings",
+		"commandAvailability": "commandPalette",
 		"commandArgs": ["files.associations"]
 	},
 	{
 		"title": "Send File Info To Terminal",
 		"extension": ".bcs",
 		"command": "workbench.action.terminal.sendSequence",
+		"commandAvailability": "both",
 		"commandArgs": [
 			{
 				"text": "echo FILE=${fsPath} NAME=${basename} EXT=${extension}\u000D"
@@ -51,6 +63,29 @@ Configure mappings in your VS Code settings:
 	}
 ]
 ```
+
+Control where the launcher is shown:
+
+```json
+"extensionLauncher.commandAvailability": "both"
+```
+
+Allowed values:
+
+- `both` (default): show in Explorer context menu and Command Palette (F1).
+- `contextMenu`: show only in Explorer context menu.
+- `commandPalette`: show only in Command Palette (F1).
+
+Per mapping, you can also set `commandAvailability`:
+
+- `both` (default): mapping is eligible from both Explorer context menu and Command Palette.
+- `contextMenu`: mapping is eligible only from Explorer context menu launches.
+- `commandPalette`: mapping is eligible only from Command Palette launches.
+
+Behavior:
+
+- Explorer context launch: if no mapping for that file extension is eligible for `both/contextMenu`, nothing happens.
+- Command Palette launch: only mappings eligible for `both/commandPalette` are shown in subsequent selection menus.
 
 Example notes:
 

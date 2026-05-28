@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { ExtensionLauncherMapping } from '../src/core';
-import { runExtensionLauncher, type ExtensionLauncherApi, type LauncherUri } from '../src/runner';
+import {
+  runExtensionLauncher,
+  runExtensionLauncherForFile,
+  type ExtensionLauncherApi,
+  type LauncherUri
+} from '../src/runner';
 
 function createUri(path: string): LauncherUri {
   return {
@@ -52,7 +57,14 @@ describe('runExtensionLauncher', () => {
 
     await runExtensionLauncher(
       createApi({
-        getConfiguredMappings: () => [{ title: 'BCS', extension: 'bcs', command: 'vscode.open' }],
+        getConfiguredMappings: () => [
+          {
+            title: 'BCS',
+            extension: 'bcs',
+            command: 'vscode.open',
+            commandAvailability: 'commandPalette'
+          }
+        ],
         hasWorkspaceFolder: () => false,
         showWarningMessage: warning,
         showMappingQuickPick: mappingQuickPick
@@ -94,7 +106,8 @@ describe('runExtensionLauncher', () => {
     const mapping: ExtensionLauncherMapping = {
       title: 'BCS',
       extension: 'bcs',
-      command: 'example.command'
+      command: 'example.command',
+      commandAvailability: 'commandPalette'
     };
 
     await runExtensionLauncher(
@@ -117,6 +130,7 @@ describe('runExtensionLauncher', () => {
       title: 'BCS',
       extension: '.bcs',
       command: 'example.command',
+      commandAvailability: 'commandPalette',
       commandArgs: ['${uri}', '${basename}', '${extension}']
     };
 
@@ -132,5 +146,135 @@ describe('runExtensionLauncher', () => {
     );
 
     expect(executeCommand).toHaveBeenCalledWith('example.command', selectedUri, 'main.bcs', 'bcs');
+  });
+
+  it('only considers command palette eligible mappings', async () => {
+    const mappingQuickPick = vi.fn(async (mappings: ExtensionLauncherMapping[]) => mappings[0]);
+    const executeCommand = vi.fn(async () => {});
+    const selectedUri = createUri('/workspace/src/main.bcs');
+
+    await runExtensionLauncher(
+      createApi({
+        getConfiguredMappings: () => [
+          {
+            title: 'Context Only',
+            extension: 'bcs',
+            command: 'example.context',
+            commandAvailability: 'contextMenu'
+          },
+          {
+            title: 'Palette Only',
+            extension: 'bcs',
+            command: 'example.palette',
+            commandAvailability: 'commandPalette'
+          }
+        ],
+        showMappingQuickPick: mappingQuickPick,
+        findFiles: async () => [selectedUri],
+        showFileQuickPick: async (files) => files[0],
+        getAvailableCommands: async () => ['example.palette'],
+        executeCommand
+      })
+    );
+
+    expect(mappingQuickPick).not.toHaveBeenCalled();
+    expect(executeCommand).toHaveBeenCalledWith('example.palette', selectedUri);
+  });
+});
+
+describe('runExtensionLauncherForFile', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it('runs directly when exactly one mapping matches selected file extension', async () => {
+    const executeCommand = vi.fn(async () => {});
+    const mappingQuickPick = vi.fn(async () => undefined);
+    const targetUri = createUri('/workspace/src/main.bcs');
+
+    await runExtensionLauncherForFile(
+      createApi({
+        getConfiguredMappings: () => [
+          {
+            title: 'BCS Open',
+            extension: 'bcs',
+            command: 'example.open',
+            commandAvailability: 'contextMenu'
+          },
+          {
+            title: 'JSON Open',
+            extension: 'json',
+            command: 'example.json',
+            commandAvailability: 'contextMenu'
+          }
+        ],
+        getAvailableCommands: async () => ['example.open', 'example.json'],
+        showMappingQuickPick: mappingQuickPick,
+        executeCommand
+      }),
+      targetUri
+    );
+
+    expect(mappingQuickPick).not.toHaveBeenCalled();
+    expect(executeCommand).toHaveBeenCalledWith('example.open', targetUri);
+  });
+
+  it('shows mapping choice when multiple mappings match selected file extension', async () => {
+    const executeCommand = vi.fn(async () => {});
+    const selectedMapping: ExtensionLauncherMapping = {
+      title: 'Run Task',
+      extension: 'bcs',
+      command: 'example.task',
+      commandAvailability: 'both'
+    };
+    const targetUri = createUri('/workspace/src/main.bcs');
+
+    await runExtensionLauncherForFile(
+      createApi({
+        getConfiguredMappings: () => [
+          {
+            title: 'Open',
+            extension: 'bcs',
+            command: 'example.open',
+            commandAvailability: 'contextMenu'
+          },
+          selectedMapping
+        ],
+        getAvailableCommands: async () => ['example.open', 'example.task'],
+        showMappingQuickPick: async (mappings) => {
+          expect(mappings).toHaveLength(2);
+          expect(mappings.every((m) => m.extension === 'bcs')).toBe(true);
+          return selectedMapping;
+        },
+        executeCommand
+      }),
+      targetUri
+    );
+
+    expect(executeCommand).toHaveBeenCalledWith('example.task', targetUri);
+  });
+
+  it('does nothing when no context-menu eligible mapping exists for selected file extension', async () => {
+    const warning = vi.fn(async () => undefined);
+    const executeCommand = vi.fn(async () => {});
+
+    await runExtensionLauncherForFile(
+      createApi({
+        getConfiguredMappings: () => [
+          {
+            title: 'BCS Palette Only',
+            extension: 'bcs',
+            command: 'example.palette',
+            commandAvailability: 'commandPalette'
+          }
+        ],
+        showWarningMessage: warning,
+        executeCommand
+      }),
+      createUri('/workspace/src/main.bcs')
+    );
+
+    expect(warning).not.toHaveBeenCalled();
+    expect(executeCommand).not.toHaveBeenCalled();
   });
 });

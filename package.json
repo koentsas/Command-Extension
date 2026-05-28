@@ -2,7 +2,7 @@
     "name": "extension-launcher",
     "displayName": "Extension Launcher",
     "description": "Run configured VS Code commands for files by extension.",
-    "version": "0.0.2",
+    "version": "0.0.3",
     "publisher": "tsasson",
     "repository": {
         "type": "git",
@@ -40,11 +40,50 @@
                 "command": "extension-launcher.run",
                 "title": "Run",
                 "category": "Extension Launcher"
+            },
+            {
+                "command": "extension-launcher.runFromExplorer",
+                "title": "Extension Launcher",
+                "category": "Extension Launcher"
             }
         ],
+        "menus": {
+            "commandPalette": [
+                {
+                    "command": "extension-launcher.run",
+                    "when": "config.extensionLauncher.commandAvailability == both || config.extensionLauncher.commandAvailability == commandPalette"
+                },
+                {
+                    "command": "extension-launcher.runFromExplorer",
+                    "when": "false"
+                }
+            ],
+            "explorer/context": [
+                {
+                    "command": "extension-launcher.runFromExplorer",
+                    "when": "(config.extensionLauncher.commandAvailability == both || config.extensionLauncher.commandAvailability == contextMenu) && explorerResourceIsFolder == false",
+                    "group": "navigation@99"
+                }
+            ]
+        },
         "configuration": {
             "title": "Extension Launcher",
             "properties": {
+                "extensionLauncher.commandAvailability": {
+                    "type": "string",
+                    "default": "both",
+                    "enum": [
+                        "both",
+                        "contextMenu",
+                        "commandPalette"
+                    ],
+                    "enumDescriptions": [
+                        "Show Extension Launcher in both Explorer context menu and Command Palette (F1).",
+                        "Show Extension Launcher only in Explorer context menu.",
+                        "Show Extension Launcher only in Command Palette (F1)."
+                    ],
+                    "markdownDescription": "Choose where the Extension Launcher entry is available."
+                },
                 "extensionLauncher.mappings": {
                     "type": "array",
                     "default": [],
@@ -68,6 +107,21 @@
                             "command": {
                                 "type": "string",
                                 "description": "VS Code command id to execute after selecting a file."
+                            },
+                            "commandAvailability": {
+                                "type": "string",
+                                "default": "both",
+                                "enum": [
+                                    "both",
+                                    "contextMenu",
+                                    "commandPalette"
+                                ],
+                                "enumDescriptions": [
+                                    "Allow this mapping from both Explorer context menu and Command Palette.",
+                                    "Allow this mapping only when launched from Explorer context menu.",
+                                    "Allow this mapping only when launched from Command Palette."
+                                ],
+                                "description": "Per-mapping availability filter. Defaults to both."
                             },
                             "commandArgs": {
                                 "type": "array",

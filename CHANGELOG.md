@@ -6,6 +6,24 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-05-28
+
+### Added
+
+- New command: `extension-launcher.runFromExplorer` to launch directly from Explorer right-click on files.
+- New setting: `extensionLauncher.commandAvailability` to control launcher entry visibility (`both`, `contextMenu`, `commandPalette`).
+- New per-mapping setting: `commandAvailability` inside `extensionLauncher.mappings` to filter mapping eligibility by launch source.
+
+### Changed
+
+- Explorer context command now filters mappings by selected file extension and only prompts when multiple eligible mappings exist.
+- Command Palette flow now only lists mappings eligible for palette launches.
+
+### Fixed
+
+- Explorer context-menu visibility now uses config-based `when` clauses so it appears reliably in debug Extension Development Host.
+- Explorer launch now does a silent no-op when no eligible mapping exists for the selected file extension.
+
 ## [0.0.2] - 2026-05-27
 
 ### Fixed
@@ -28,6 +46,7 @@ The format is based on Keep a Changelog.
 - Token replacement support in command arguments (`${uri}`, `${fsPath}`, `${path}`, `${basename}`, `${dirname}`, `${extension}`).
 - Build and release scripts for linting, type-checking, tests, packaging, and publishing.
 
-[Unreleased]: https://github.com/koentsas/Command-Extension/compare/v0.0.2...HEAD
+[Unreleased]: https://github.com/koentsas/Command-Extension/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/koentsas/Command-Extension/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/koentsas/Command-Extension/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/koentsas/Command-Extension/releases/tag/v0.0.1

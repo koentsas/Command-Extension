@@ -2,8 +2,13 @@ export type ExtensionLauncherMapping = {
   title: string;
   extension: string;
   command: string;
+  commandAvailability?: CommandAvailability;
   commandArgs?: unknown[];
 };
+
+export type CommandAvailability = 'both' | 'contextMenu' | 'commandPalette';
+
+export type LaunchSource = 'contextMenu' | 'commandPalette';
 
 export type UriTokenValues = {
   uri: string;
@@ -24,6 +29,7 @@ export function parseConfiguredMappings(rawMappings: unknown[]): ExtensionLaunch
     const title = asNonEmptyString(mapping.title);
     const extension = normalizeExtension(asNonEmptyString(mapping.extension));
     const command = asNonEmptyString(mapping.command);
+    const commandAvailability = normalizeCommandAvailability(mapping.commandAvailability);
     const commandArgs = Array.isArray(mapping.commandArgs) ? mapping.commandArgs : undefined;
 
     if (!title || !extension || !command) {
@@ -34,6 +40,7 @@ export function parseConfiguredMappings(rawMappings: unknown[]): ExtensionLaunch
       title,
       extension,
       command,
+      commandAvailability,
       commandArgs
     });
   }
@@ -112,6 +119,34 @@ export function escapeForGlob(value: string): string {
     .replaceAll('}', '')
     .replaceAll('*', '')
     .replaceAll('?', '');
+}
+
+export function extensionFromPath(uriPath: string): string {
+  const base = basenameFromPath(uriPath);
+  const dotIndex = base.lastIndexOf('.');
+
+  if (dotIndex < 0 || dotIndex === base.length - 1) {
+    return '';
+  }
+
+  return normalizeExtension(base.slice(dotIndex + 1));
+}
+
+export function isMappingAvailableForSource(
+  mapping: ExtensionLauncherMapping,
+  source: LaunchSource
+): boolean {
+  const availability = normalizeCommandAvailability(mapping.commandAvailability);
+
+  return availability === 'both' || availability === source;
+}
+
+export function normalizeCommandAvailability(value: unknown): CommandAvailability {
+  if (value === 'both' || value === 'contextMenu' || value === 'commandPalette') {
+    return value;
+  }
+
+  return 'both';
 }
 
 function basenameFromPath(uriPath: string): string {
