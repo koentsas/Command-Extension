@@ -274,9 +274,7 @@ describe('runExtensionLauncherForFile', () => {
       createUri('/workspace/src/main.bcs')
     );
 
-    expect(information).toHaveBeenCalledWith(
-      'No context menu mappings found for .bcs files.'
-    );
+    expect(information).toHaveBeenCalledWith('No context menu mappings found for .bcs files.');
     expect(executeCommand).not.toHaveBeenCalled();
   });
 
@@ -300,7 +298,9 @@ describe('runExtensionLauncherForFile', () => {
       createUri('/workspace/src/README')
     );
 
-    expect(information).toHaveBeenCalledWith('No context menu mappings found for the selected file.');
+    expect(information).toHaveBeenCalledWith(
+      'No context menu mappings found for the selected file.'
+    );
     expect(executeCommand).not.toHaveBeenCalled();
   });
 });
