@@ -90,6 +90,7 @@ export async function runExtensionLauncherForFile(
 
   const fileExtension = extensionFromPath(targetFile.path);
   if (!fileExtension) {
+    api.showInformationMessage('No context menu mappings found for the selected file.');
     return;
   }
 
@@ -98,6 +99,7 @@ export async function runExtensionLauncherForFile(
       mapping.extension === fileExtension && isMappingAvailableForSource(mapping, 'contextMenu')
   );
   if (matchingMappings.length === 0) {
+    api.showInformationMessage(`No context menu mappings found for .${fileExtension} files.`);
     return;
   }
 

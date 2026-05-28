@@ -255,7 +255,7 @@ describe('runExtensionLauncherForFile', () => {
   });
 
   it('does nothing when no context-menu eligible mapping exists for selected file extension', async () => {
-    const warning = vi.fn(async () => undefined);
+    const information = vi.fn();
     const executeCommand = vi.fn(async () => {});
 
     await runExtensionLauncherForFile(
@@ -268,13 +268,39 @@ describe('runExtensionLauncherForFile', () => {
             commandAvailability: 'commandPalette'
           }
         ],
-        showWarningMessage: warning,
+        showInformationMessage: information,
         executeCommand
       }),
       createUri('/workspace/src/main.bcs')
     );
 
-    expect(warning).not.toHaveBeenCalled();
+    expect(information).toHaveBeenCalledWith(
+      'No context menu mappings found for .bcs files.'
+    );
+    expect(executeCommand).not.toHaveBeenCalled();
+  });
+
+  it('shows a message when selected file has no extension', async () => {
+    const information = vi.fn();
+    const executeCommand = vi.fn(async () => {});
+
+    await runExtensionLauncherForFile(
+      createApi({
+        getConfiguredMappings: () => [
+          {
+            title: 'BCS Open',
+            extension: 'bcs',
+            command: 'example.open',
+            commandAvailability: 'contextMenu'
+          }
+        ],
+        showInformationMessage: information,
+        executeCommand
+      }),
+      createUri('/workspace/src/README')
+    );
+
+    expect(information).toHaveBeenCalledWith('No context menu mappings found for the selected file.');
     expect(executeCommand).not.toHaveBeenCalled();
   });
 });
