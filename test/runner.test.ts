@@ -27,6 +27,7 @@ function createApi(overrides: Partial<ExtensionLauncherApi> = {}): ExtensionLaun
     showInformationMessage: () => {},
     showFileQuickPick: async () => undefined,
     getAvailableCommands: async () => [],
+    ensureNamedTerminal: async () => {},
     executeCommand: async () => {},
     showErrorMessage: () => {},
     ...overrides
@@ -146,6 +147,36 @@ describe('runExtensionLauncher', () => {
     );
 
     expect(executeCommand).toHaveBeenCalledWith('example.command', selectedUri, 'main.bcs', 'bcs');
+  });
+
+  it('prepares a dedicated terminal for terminal sendSequence mappings', async () => {
+    const executeCommand = vi.fn(async () => {});
+    const ensureNamedTerminal = vi.fn(async () => {});
+    const selectedUri = createUri('/workspace/src/main.bcs');
+    const mapping: ExtensionLauncherMapping = {
+      title: 'Send File Info To Terminal',
+      extension: '.bcs',
+      command: 'workbench.action.terminal.sendSequence',
+      commandAvailability: 'commandPalette',
+      commandArgs: [{ text: 'echo ${basename}\u000D' }]
+    };
+
+    await runExtensionLauncher(
+      createApi({
+        getConfiguredMappings: () => [mapping],
+        showMappingQuickPick: async () => mapping,
+        findFiles: async () => [selectedUri],
+        showFileQuickPick: async (files) => files[0],
+        getAvailableCommands: async () => ['workbench.action.terminal.sendSequence'],
+        ensureNamedTerminal,
+        executeCommand
+      })
+    );
+
+    expect(ensureNamedTerminal).toHaveBeenCalledWith('Send File Info To Terminal');
+    expect(executeCommand).toHaveBeenCalledWith('workbench.action.terminal.sendSequence', {
+      text: 'echo main.bcs\u000D'
+    });
   });
 
   it('only considers command palette eligible mappings', async () => {

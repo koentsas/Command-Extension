@@ -25,9 +25,12 @@ export interface ExtensionLauncherApi {
   showInformationMessage(message: string): void;
   showFileQuickPick(files: LauncherUri[], extension: string): PromiseLike<LauncherUri | undefined>;
   getAvailableCommands(): PromiseLike<string[]>;
+  ensureNamedTerminal(name: string): PromiseLike<void>;
   executeCommand(command: string, ...args: unknown[]): PromiseLike<void>;
   showErrorMessage(message: string): void;
 }
+
+const TERMINAL_SEND_SEQUENCE_COMMAND = 'workbench.action.terminal.sendSequence';
 
 export async function runExtensionLauncher(api: ExtensionLauncherApi): Promise<void> {
   const mappings = api.getConfiguredMappings();
@@ -134,6 +137,14 @@ async function executeMappingForFile(
     uriObject: selectedFile
   };
 
+  if (requiresDedicatedTerminal(mapping.command)) {
+    await api.ensureNamedTerminal(mapping.title);
+  }
+
   const args = buildCommandArgs(mapping, uriValues, selectedFile);
   await api.executeCommand(mapping.command, ...args);
+}
+
+function requiresDedicatedTerminal(command: string): boolean {
+  return command === TERMINAL_SEND_SEQUENCE_COMMAND;
 }

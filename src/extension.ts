@@ -105,6 +105,11 @@ function createLauncherApi(): ExtensionLauncherApi {
       return filePick?.uri;
     },
     getAvailableCommands: () => vscode.commands.getCommands(true),
+    ensureNamedTerminal: async (name: string) => {
+      const existingTerminal = vscode.window.terminals.find((terminal) => terminal.name === name);
+      const terminal = existingTerminal ?? vscode.window.createTerminal({ name });
+      terminal.show(true);
+    },
     executeCommand: (command: string, ...args: unknown[]) =>
       vscode.commands.executeCommand(command, ...args),
     showErrorMessage: (message: string) => {

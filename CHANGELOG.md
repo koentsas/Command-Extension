@@ -6,6 +6,10 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+### Changed
+
+- `workbench.action.terminal.sendSequence` mappings now run in a dedicated terminal named after the mapping title. The terminal is reused when it already exists.
+
 ## [0.0.3] - 2026-05-28
 
 ### Added

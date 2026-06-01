@@ -92,7 +92,7 @@ Example notes:
 - `vscode.open`: omit `commandArgs` so the selected file `Uri` is passed automatically.
 - `workbench.action.tasks.runTask`: pass the task label exactly as defined in your `tasks.json`.
 - `workbench.action.openSettings`: useful when you want to jump to a specific setting query.
-- `workbench.action.terminal.sendSequence`: shows token usage in command arguments.
+- `workbench.action.terminal.sendSequence`: uses a dedicated terminal named after the mapping `title` (reused if it already exists), then sends the sequence there.
 
 `commandArgs` is optional.
 
