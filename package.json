@@ -2,7 +2,7 @@
     "name": "extension-launcher",
     "displayName": "Extension Launcher",
     "description": "Run configured VS Code commands for files by extension.",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "tsasson",
     "repository": {
         "type": "git",

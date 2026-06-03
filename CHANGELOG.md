@@ -6,6 +6,8 @@ The format is based on Keep a Changelog.
 
 ## [Unreleased]
 
+## [0.0.4] - 2026-06-03
+
 ### Changed
 
 - `workbench.action.terminal.sendSequence` mappings now run in a dedicated terminal named after the mapping title. The terminal is reused when it already exists.
@@ -50,7 +52,8 @@ The format is based on Keep a Changelog.
 - Token replacement support in command arguments (`${uri}`, `${fsPath}`, `${path}`, `${basename}`, `${dirname}`, `${extension}`).
 - Build and release scripts for linting, type-checking, tests, packaging, and publishing.
 
-[Unreleased]: https://github.com/koentsas/Command-Extension/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/koentsas/Command-Extension/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/koentsas/Command-Extension/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/koentsas/Command-Extension/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/koentsas/Command-Extension/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/koentsas/Command-Extension/releases/tag/v0.0.1
